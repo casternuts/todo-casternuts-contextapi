@@ -1,14 +1,20 @@
 
 import './App.css';
-import { React, useEffect, useState } from 'react';
+import { React, useEffect, useState, useContext } from 'react';
 import { AiOutlineDelete } from 'react-icons/ai'
 import { BsCheckLg } from "react-icons/bs";
+import { TodoProvider, TodoContext } from './context/TodoContext';
+
 function App() {
   const [isCompleteScreen, setIsCompleteScreen] = useState(false);
-  const [allTodos, setTodos] = useState([]);
+  //const [allTodos, setTodos] = useState([]);
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
-  const [completeTodos, setCompleteTodos] = useState([]);
+  //const [completeTodos, setCompleteTodos] = useState([]);
+  const [allTodos, setTodos, completeTodos, setCompleteTodos] = useContext(TodoContext);
+  //console.log(useContext(TodoContext))
+  //const [completeTodos, setCompleteTodos] = useContext(TodoContext);
+
   //추가
   const handleAddTodo = () => {
     console.log('ddd')
@@ -60,72 +66,74 @@ function App() {
   }
 
   // 초기 데이터 로딩
-  useEffect(() => {
-    let savedTodo = JSON.parse(localStorage.getItem('todolist'));
-    let savedCompletedTodo = JSON.parse(localStorage.getItem('completedTodos'));
-    if (savedTodo) {
-      setTodos(savedTodo);
-    }
-    if (savedCompletedTodo) {
-      setCompleteTodos(savedCompletedTodo);
-    }
-  }, [])
+  // useEffect(() => {
+  //   let savedTodo = JSON.parse(localStorage.getItem('todolist'));
+  //   let savedCompletedTodo = JSON.parse(localStorage.getItem('completedTodos'));
+  //   if (savedTodo) {
+  //     setTodos(savedTodo);
+  //   }
+  //   if (savedCompletedTodo) {
+  //     setCompleteTodos(savedCompletedTodo);
+  //   }
+  // }, [])
 
 
   return (
-    <div className="App">
-      <h1>나의 할일</h1>
-      <div className="todo-wrapper">
-        <div className="todo-input">
-          <div className="todo-input-item">
-            <label>Title</label>
-            <input type="text" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="제목"></input>
-          </div>
-          <div className="todo-input-item">
-            <label>설명</label>
-            <input type="text" placeholder="설명" value={newDescription} onChange={(e) => setNewDescription(e.target.value)}></input>
-          </div>
-          <div className="todo-input-item">
-            <button type="button" onClick={handleAddTodo} className="primaryBtn">추가</button>
-          </div>
-        </div>
-
-        <div className="btn-area">
-          <button type="button" className={`secondaryBtn ${isCompleteScreen === false && 'active'}`} onClick={() => setIsCompleteScreen(false)}>해야할일</button>
-          <button type="button" className={`secondaryBtn ${isCompleteScreen === true && 'active'}`} onClick={() => setIsCompleteScreen(true)}>완료</button>
-        </div>
-        <div className='todo-list'>
-          {/* 모든 할 일들 */}
-          {isCompleteScreen === false && allTodos.map((item, index) => (
-
-            <div className='todo-list-item' key={index}>
-              <div>
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
-              </div>
-              <div className='icon-area'>
-                <AiOutlineDelete className='icon' title="delete" onClick={() => handleDeleteTodo(index)}></AiOutlineDelete>
-                <BsCheckLg className='check-icon' title="complete" onClick={() => handleComplete(index)}></BsCheckLg>
-              </div>
+    <TodoProvider>
+      <div className="App">
+        <h1>나의 할일</h1>
+        <div className="todo-wrapper">
+          <div className="todo-input">
+            <div className="todo-input-item">
+              <label>Title</label>
+              <input type="text" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="제목"></input>
             </div>
-          ))}
-          {/* 완료 한 일들 */}
-          {isCompleteScreen === true && completeTodos.map((item, index) => (
-
-            <div className='todo-list-item' key={index}>
-              <div>
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
-                <p>완료일:{item.completedOn}</p>
-              </div>
-              <div className='icon-area'>
-                <AiOutlineDelete className='icon' title="delete" onClick={() => handleDeleteCompleteTodo(index)}></AiOutlineDelete>
-              </div>
+            <div className="todo-input-item">
+              <label>설명</label>
+              <input type="text" placeholder="설명" value={newDescription} onChange={(e) => setNewDescription(e.target.value)}></input>
             </div>
-          ))}
+            <div className="todo-input-item">
+              <button type="button" onClick={handleAddTodo} className="primaryBtn">추가</button>
+            </div>
+          </div>
+
+          <div className="btn-area">
+            <button type="button" className={`secondaryBtn ${isCompleteScreen === false && 'active'}`} onClick={() => setIsCompleteScreen(false)}>해야할일</button>
+            <button type="button" className={`secondaryBtn ${isCompleteScreen === true && 'active'}`} onClick={() => setIsCompleteScreen(true)}>완료</button>
+          </div>
+          <div className='todo-list'>
+            {/* 모든 할 일들 */}
+            {isCompleteScreen === false && allTodos.map((item, index) => (
+
+              <div className='todo-list-item' key={index}>
+                <div>
+                  <h3>{item.title}</h3>
+                  <p>{item.description}</p>
+                </div>
+                <div className='icon-area'>
+                  <AiOutlineDelete className='icon' title="delete" onClick={() => handleDeleteTodo(index)}></AiOutlineDelete>
+                  <BsCheckLg className='check-icon' title="complete" onClick={() => handleComplete(index)}></BsCheckLg>
+                </div>
+              </div>
+            ))}
+            {/* 완료 한 일들 */}
+            {isCompleteScreen === true && completeTodos.map((item, index) => (
+
+              <div className='todo-list-item' key={index}>
+                <div>
+                  <h3>{item.title}</h3>
+                  <p>{item.description}</p>
+                  <p>완료일:{item.completedOn}</p>
+                </div>
+                <div className='icon-area'>
+                  <AiOutlineDelete className='icon' title="delete" onClick={() => handleDeleteCompleteTodo(index)}></AiOutlineDelete>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-    </div >
+      </div >
+    </TodoProvider>
   );
 }
 
